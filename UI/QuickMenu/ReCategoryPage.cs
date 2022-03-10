@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using ReMod.Core.Unity;
 using ReMod.Core.VRChat;
 using TMPro;
 using UnityEngine;
@@ -95,6 +96,9 @@ namespace ReMod.Core.UI.QuickMenu
                 rootPages.Add(UiPage);
                 QuickMenuEx.MenuStateCtrl.field_Public_ArrayOf_UIPage_0 = rootPages.ToArray();
             }
+
+            EnableDisableListener.RegisterSafe();
+            GameObject.AddComponent<EnableDisableListener>().OnEnableEvent += () => OnOpen?.Invoke();
         }
 
         public ReCategoryPage(Transform transform) : base(transform)
@@ -137,10 +141,15 @@ namespace ReMod.Core.UI.QuickMenu
             var buttonContainer = new ReMenuButtonContainer(_container.Find($"Buttons_{GetCleanName(name)}"));
             return new ReMenuCategory(header, buttonContainer);
         }
-
+        
         public ReMenuSliderCategory AddSliderCategory(string title)
         {
-            return GetSliderCategory(title) ?? new ReMenuSliderCategory(title, _container);
+            return AddSliderCategory(title, true);
+        }
+
+        public ReMenuSliderCategory AddSliderCategory(string title, bool collapsible = true)
+        {
+            return GetSliderCategory(title) ?? new ReMenuSliderCategory(title, _container, collapsible);
         }
 
         public ReMenuSliderCategory GetSliderCategory(string name)

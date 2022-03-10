@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using ReMod.Core.Unity;
 using ReMod.Core.VRChat;
 using TMPro;
 using UnityEngine;
@@ -116,6 +117,9 @@ namespace ReMod.Core.UI.QuickMenu
                 rootPages.Add(UiPage);
                 QuickMenuEx.MenuStateCtrl.field_Public_ArrayOf_UIPage_0 = rootPages.ToArray();
             }
+
+            EnableDisableListener.RegisterSafe();
+            GameObject.AddComponent<EnableDisableListener>().OnEnableEvent += () => OnOpen?.Invoke();
         }
 
         public ReMenuPage(Transform transform) : base(transform)
@@ -147,7 +151,8 @@ namespace ReMod.Core.UI.QuickMenu
 
         public ReMenuButton AddSpacer(Sprite sprite = null)
         {
-            var spacer = AddButton("Spacer", string.Empty, null, sprite);
+            var spacer = AddButton(string.Empty, string.Empty, null, sprite);
+            spacer.GameObject.name = "Button_Spacer";
             spacer.Background.gameObject.SetActive(false);
             return spacer;
         }

@@ -1,6 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <ProjectGuid>{C87FE758-ACB9-4FA2-AF6F-10AA9AA0023C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ReMod.Core</RootNamespace>
     <AssemblyName>ReMod.Core</AssemblyName>
     <RootNamespace>ReMod.Core</RootNamespace>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -9,6 +13,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Reference Include="HarmonyLib">
+      <Private>false</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(MlPath)\0Harmony.dll</HintPath>
+    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>$(VRChatPath)MelonLoader\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>

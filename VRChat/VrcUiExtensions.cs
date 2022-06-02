@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using UnhollowerRuntimeLib.XrefScans;
 using UnityEngine;
 using VRC.Core;
 using VRC.UI.Core;
@@ -13,7 +15,7 @@ namespace ReMod.Core.VRChat
     {
         public static GameObject MenuContent(this VRCUiManager uiManager)
         {
-            return uiManager.field_Public_GameObject_0;
+            return uiManager.field_Private_Transform_0.gameObject;
         }
 
         public static void StartRenderElementsCoroutine(this UiVRCList instance, Il2CppSystem.Collections.Generic.List<ApiAvatar> avatarList, int offset = 0, bool endOfPickers = true, VRCUiContentButton contentHeaderElement = null)
@@ -42,19 +44,19 @@ namespace ReMod.Core.VRChat
         }
         
         private delegate void PushPageDelegate(MenuStateController menuStateCtrl, string pageName, UIContext uiContext,
-            bool clearPageStack);
+            bool clearPageStack, UIPage.TransitionType transitionType);
         private static PushPageDelegate _pushPage;
 
         public static void PushPage(this MenuStateController menuStateCtrl, string pageName, UIContext uiContext = null,
-            bool clearPageStack = false)
+            bool clearPageStack = false, UIPage.TransitionType transitionType = UIPage.TransitionType.Right)
         {
             if (_pushPage == null)
             {
                 _pushPage = (PushPageDelegate)Delegate.CreateDelegate(typeof(PushPageDelegate),
-                    typeof(MenuStateController).GetMethods().FirstOrDefault(m => m.GetParameters().Length == 3 && m.Name.StartsWith("Method_Public_Void_String_UIContext_Boolean_") && XrefUtils.CheckMethod(m, "No page named")));
+                    typeof(MenuStateController).GetMethods().FirstOrDefault(m => m.GetParameters().Length == 4 && m.Name.StartsWith("Method_Public_Void_String_UIContext_Boolean_TransitionType_") && XrefUtils.CheckMethod(m, "No page named")));
             }
 
-            _pushPage(menuStateCtrl, pageName, uiContext, clearPageStack);
+            _pushPage(menuStateCtrl, pageName, uiContext, clearPageStack, transitionType);
         }
         
         private delegate void SwitchToRootPageDelegate(MenuStateController menuStateCtrl, string pageName, UIContext uiContext,
@@ -120,6 +122,19 @@ namespace ReMod.Core.VRChat
             return uiManager.MenuContent().transform.Find($"Screens/{BigMenuIndexToNameTable[menuIndex]}");
         }
 
+        private static MethodInfo[] _radioSetTitleMethods; 
+
+        public static void SetTitle(this RadioButtonSelector selector, string key, string displayName)
+        {
+            _radioSetTitleMethods ??= typeof(RadioButtonSelector).GetMethods(BindingFlags.Public | BindingFlags.Instance)
+                .Where(x => x.Name.Contains("Method_Public_Void_String_String_PDM") && XrefScanner.UsedBy(x).Any()).ToArray();
+
+            foreach (var method in _radioSetTitleMethods)
+            {
+                method.Invoke(selector, new object[] {key, displayName});
+            }
+        }
+
         private static readonly Dictionary<QuickMenu.MainMenuScreenIndex, string> BigMenuIndexToPathTable = new Dictionary<QuickMenu.MainMenuScreenIndex, string>()
         {
             { QuickMenu.MainMenuScreenIndex.Unknown, "" },
@@ -130,8 +145,8 @@ namespace ReMod.Core.VRChat
             { QuickMenu.MainMenuScreenIndex.UserDetailsMenu, "UserInterface/MenuContent/Screens/UserInfo" },
             { QuickMenu.MainMenuScreenIndex.DetailsMenu_Obsolete, "UserInterface/MenuContent/Screens/ImageDetails" },
             { QuickMenu.MainMenuScreenIndex.SafetyMenu, "UserInterface/MenuContent/Screens/Settings_Safety" },
-            { QuickMenu.MainMenuScreenIndex.CurrentUserPlaylistsMenu, "UserInterface/MenuContent/Screens/Playlists" },
-            { QuickMenu.MainMenuScreenIndex.OtherUserPlaylistsMenu, "UserInterface/MenuContent/Screens/Playlists" },
+            { QuickMenu.MainMenuScreenIndex.CurrentUserFavoriteListMenu, "UserInterface/MenuContent/Screens/Playlists" },
+            { QuickMenu.MainMenuScreenIndex.OtherUserFavoriteListMenu, "UserInterface/MenuContent/Screens/Playlists" },
             { QuickMenu.MainMenuScreenIndex.VRCPlusMenu, "UserInterface/MenuContent/Screens/VRC+" },
             { QuickMenu.MainMenuScreenIndex.GalleryMenu, "UserInterface/MenuContent/Screens/Gallery" },
         };
@@ -147,8 +162,8 @@ namespace ReMod.Core.VRChat
             { QuickMenu.MainMenuScreenIndex.UserDetailsMenu, "UserInfo" },
             { QuickMenu.MainMenuScreenIndex.DetailsMenu_Obsolete, "ImageDetails" },
             { QuickMenu.MainMenuScreenIndex.SafetyMenu, "Settings_Safety" },
-            { QuickMenu.MainMenuScreenIndex.CurrentUserPlaylistsMenu, "Playlists" },
-            { QuickMenu.MainMenuScreenIndex.OtherUserPlaylistsMenu, "Playlists" },
+            { QuickMenu.MainMenuScreenIndex.CurrentUserFavoriteListMenu, "Playlists" },
+            { QuickMenu.MainMenuScreenIndex.OtherUserFavoriteListMenu, "Playlists" },
             { QuickMenu.MainMenuScreenIndex.VRCPlusMenu, "VRC+" },
             { QuickMenu.MainMenuScreenIndex.GalleryMenu, "Gallery" },
         };

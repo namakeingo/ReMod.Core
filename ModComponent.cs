@@ -25,6 +25,8 @@ namespace ReMod.Core
 
     public class ModComponent
     {
+        public bool Enabled { get; set; } = true;
+
         public virtual void OnUiManagerInitEarly(){}
         public virtual void OnUiManagerInit(UiManager uiManager){}
         public virtual void OnFixedUpdate(){}
@@ -59,6 +61,7 @@ namespace ReMod.Core
         public virtual void OnOperationResponse(LoadBalancingClient loadBalancingClient, OperationResponse operationResponse) { }
         public virtual void OnJoinedRoom() { }
         public virtual void OnLeftRoom() { }
+        public virtual void OnModulesLoaded() { }
 
         protected HarmonyMethod GetLocalPatch(string methodName)
         {

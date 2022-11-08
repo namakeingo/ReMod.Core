@@ -1,3 +1,6 @@
+# VRCHAT Killed its modding community 
+# DEPRECATED
+
 # ReMod.Core
 
 [![main](https://img.shields.io/github/workflow/status/RequiDev/ReMod.Core/main?style=for-the-badge)](https://github.com/RequiDev/ReMod.Core/actions/workflows/main.yml)
